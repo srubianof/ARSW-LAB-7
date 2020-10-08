@@ -131,11 +131,8 @@ var app = (function () {
                     ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
 
                 })
-            }
-
-
-
-            var subcribeAndPublish = function (row, col) {
+            },
+            subcribeAndPublish(row, col) {
                 console.info('Connecting to WS...');
                 var socket = new SockJS('/stompendpoint');
                 stompClient = Stomp.over(socket);
