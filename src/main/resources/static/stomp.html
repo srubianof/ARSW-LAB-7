@@ -12,32 +12,34 @@ and open the template in the editor.
     <script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
-    <script src="/webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/webjars/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet"
+          href="/webjars/bootstrap/4.5.2/css/bootstrap.min.css"/>
     <script src="js/stomp.js"></script>
-
+    <style>
+        .cuadro {
+            width: 320px;
+            padding: 10px;
+            border: 5px solid #1b1818;
+            margin: 0;
+        }
+    </style>
 
 </head>
 <body onload="appStomp.init()">
 <div>
-    <canvas id="myCanvas" width="500" height="400" style="border:1px solid #000000;">
-        Your browser does not support the HTML5 canvas tag.
-    </canvas>
+    <canvas id="myCanvas" width="775" height="450" style="border:5px solid #1b1818;"></canvas>
     <form class="form-inline">
         <div class="cuadro" style="width: 50%">
             <p style="text-align-last: center;">Buy Seats</p>
-            <label>Seat</label>
             <input id="row" type="text" class="form-control mb-2"
                    placeholder="Row">
             <input type="text" id="col" placeholder="Column" name="date" class="form-control mb-2">
             <button id="button" type="button" class="btn btn-primary mb-2"
                     onclick="appStomp.buyTicket($('#row').val(),$('#col').val())"
-                    value="get Functions">Buy
-            </button>
-            <!--            onclick="app.actualizarSilla($('#cinemaName').val(),$('#row').val(),$('#col').val())"-->
+                    value="get Functions">Buy</button>
         </div>
     </form>
-
-
 </div>
 </body>
 </html>

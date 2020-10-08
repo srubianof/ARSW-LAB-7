@@ -57,9 +57,9 @@ var appStomp = (function () {
         //subscribe to /topic/TOPICXX when connections succeed
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/buyticket', function (eventbody) {
+            stompClient.subscribe('/topic/buyticket', message => {
                 alert("evento recibido");
-                var theObject = JSON.parse(eventbody.body);
+                var theObject = JSON.parse(message.body);
                 console.log(theObject.row);
                 console.log(theObject.col);
             });
