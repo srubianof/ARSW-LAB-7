@@ -57,9 +57,9 @@ var appStomp2 = (function () {
         //subscribe to /topic/TOPICXX when connections succeed
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/buyticket', function (eventbody) {
+            stompClient.subscribe('/topic/buyticket', message => {
                 alert("Hemos recibido un evento!");
-                var theObject = JSON.parse(eventbody.body);
+                var theObject = JSON.parse(message.body);
                 console.log(theObject);
             });
         });
@@ -68,24 +68,20 @@ var appStomp2 = (function () {
     var verifyAvailability = function (row, col) {
         if (seats[row][col]) {
             seats[row][col] = false;
-            stompClient.send("/app/buyticket", {}, JSON.stringify())
+            stompClient.send("/topic/buyticket", {}, JSON.stringify(seat));
             console.info("purchased ticket");
         } else {
             console.info("Ticket not available");
         }
-
     };
 
-
     return {
-
         init: function () {
             var can = document.getElementById("canvas");
             drawSeats();
             //websocket connection
             connectAndSubscribe();
         },
-
         buyTicket: function (row, col) {
             var st = new Seat(row, col);
             console.info("buying ticket at row: " + row + "col: " + col);

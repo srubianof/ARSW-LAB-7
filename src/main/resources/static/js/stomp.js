@@ -1,6 +1,7 @@
 var appStomp = (function () {
 
     var seats = [[false, true, true, true, true, false, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true]];
+    var positions = [[null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null]];
     var c, ctx;
 
     class Seat {
@@ -13,17 +14,28 @@ var appStomp = (function () {
     var stompClient = null;
     //get the x, y positions of the mouse click relative to the canvas
     var getMousePosition = function (evt) {
-        $('#myCanvas').click(function (e) {
-            var rect = canvas.getBoundingClientRect();
+        $('#canvita').click(e => {
+            var rect = canvita.getBoundingClientRect();
             var x = e.clientX - rect.left;
             var y = e.clientY - rect.top;
-            console.info(x);
-            console.info(y);
+            checkIfSeat(x, y);
         });
     };
 
+    var checkIfSeat = function (x, y) {
+        for (let i = 0; i < positions.length; i++) {
+            for (let j = 0; j < positions[i].length; j++) {
+                if (x >= positions[i][j].row && x <= positions[i][j].row + 20) {
+                    if (y >= positions[i][j].col && y <= positions[i][j].col + 20) {
+                        console.log("SILLA!!!!");
+                    }
+                }
+            }
+        }
+    }
+
     var drawSeats = function (cinemaFunction) {
-        c = document.getElementById("myCanvas");
+        c = document.getElementById("canvita");
         ctx = c.getContext("2d");
         ctx.fillStyle = "#001933";
         ctx.fillRect(100, 20, 300, 80);
@@ -43,22 +55,23 @@ var appStomp = (function () {
                 }
                 col++;
                 ctx.fillRect(20 * col, 20 * row, 20, 20);
+                positions[i][j] = new Seat(20 * col, 20 * row);
                 col++;
             }
             row++;
         }
+        console.log(positions)
     };
 
     var connectAndSubscribe = function () {
         console.info('Connecting to WS...');
         var socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
-
         //subscribe to /topic/TOPICXX when connections succeed
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
             stompClient.subscribe('/topic/buyticket', message => {
-                alert("evento recibido");
+                drawSeats();
                 var theObject = JSON.parse(message.body);
                 console.log(theObject.row);
                 console.log(theObject.col);
@@ -67,13 +80,13 @@ var appStomp = (function () {
     };
 
     var verifyAvailability = function (row, col) {
-        var st = new Seat(row, col);
+        let seat = new Seat(row, col);
         if (seats[row][col] === true) {
             console.log("Available");
             seats[row][col] = false;
             console.info("purchased ticket");
             console.log(seats)
-            stompClient.send("/topic/buyticket", {}, JSON.stringify(st));
+            stompClient.send("/topic/buyticket", {}, JSON.stringify(seat));
         } else {
             console.info("Ticket not available");
         }
@@ -89,7 +102,6 @@ var appStomp = (function () {
         buyTicket: function (row, col) {
             console.info("buying ticket at row: " + row + "col: " + col);
             verifyAvailability(row, col);
-            drawSeats();
             //buy ticket
         },
         disconnect: function () {
@@ -98,6 +110,10 @@ var appStomp = (function () {
             }
             setConnected(false);
             console.log("Disconnected");
+        },
+        getMousePosition: function () {
+            console.log("Click yes :D");
+            getMousePosition();
         }
     };
 })();
