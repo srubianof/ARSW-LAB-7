@@ -9,9 +9,7 @@ var appStomp2 = (function () {
         }
     }
 
-
     var stompClient = null;
-
 
     var getMousePosition = function (evt) {
         canvas = document.getElementById("canvas");
@@ -63,6 +61,11 @@ var appStomp2 = (function () {
                 console.log(theObject);
             });
         });
+    };
+
+    var eventListener = function () {
+        getMousePosition();
+        document.getElementById("button").disable = true;
     };
 
     var verifyAvailability = function (row, col) {

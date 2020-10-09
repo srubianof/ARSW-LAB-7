@@ -27,7 +27,8 @@ var appStomp = (function () {
             for (let j = 0; j < positions[i].length; j++) {
                 if (x >= positions[i][j].row && x <= positions[i][j].row + 20) {
                     if (y >= positions[i][j].col && y <= positions[i][j].col + 20) {
-                        console.log("SILLA!!!!");
+                        console.info("SILLITA!")
+                        verifyAvailability(i, j);
                     }
                 }
             }
@@ -71,15 +72,19 @@ var appStomp = (function () {
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
             stompClient.subscribe('/topic/buyticket', message => {
-                drawSeats();
                 var theObject = JSON.parse(message.body);
-                console.log(theObject.row);
-                console.log(theObject.col);
+                seats[theObject.row][theObject.col] = false;
+                drawSeats();
             });
         });
     };
 
+    var eventListener = function () {
+        getMousePosition();
+    };
+
     var verifyAvailability = function (row, col) {
+        console.log("Sillita numero:" + row + col)
         let seat = new Seat(row, col);
         if (seats[row][col] === true) {
             console.log("Available");
@@ -114,6 +119,7 @@ var appStomp = (function () {
         getMousePosition: function () {
             console.log("Click yes :D");
             getMousePosition();
-        }
+        },
+        eventListener: eventListener
     };
 })();

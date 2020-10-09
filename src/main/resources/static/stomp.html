@@ -24,21 +24,26 @@ and open the template in the editor.
             margin: 0;
         }
     </style>
-
 </head>
 <body onload="appStomp.init()">
 <div>
-    <canvas id="canvita" width="775" height="450" style="border:5px solid #1b1818;" onclick="appStomp.getMousePosition()"></canvas>
-    <form class="form-inline">
-        <div class="cuadro" style="width: 50%">
-            <p style="text-align-last: center;">Buy Seats</p>
-            <input id="row" type="text" class="form-control mb-2" placeholder="Row">
-            <input type="text" id="col" placeholder="Column" name="date" class="form-control mb-2">
-            <button id="button" type="button" class="btn btn-primary mb-2"
-                    onclick="appStomp.buyTicket($('#row').val(),$('#col').val())"
-                    value="get Functions">Buy</button>
-        </div>
-    </form>
+    <canvas id="canvita" width="775" height="450" style="border:5px solid #1b1818;"
+            onclick="appStomp.getMousePosition()"></canvas>
+    <button id="button" type="button" class="btn btn-primary mb-2"
+            onclick="appStomp.eventListener()"
+            value="get Functions">Buy
+    </button>
+    <!--    <form class="form-inline">-->
+    <!--        <div class="cuadro" style="width: 50%">-->
+    <!--            <p style="text-align-last: center;">Buy Seats</p>-->
+    <!--            <input id="row" type="text" class="form-control mb-2" placeholder="Row">-->
+    <!--            <input type="text" id="col" placeholder="Column" name="date" class="form-control mb-2">-->
+    <!--            <button id="button" type="button" class="btn btn-primary mb-2"-->
+    <!--                    onclick="appStomp.buyTicket($('#row').val(),$('#col').val())"-->
+    <!--                    value="get Functions">Buy-->
+    <!--            </button>-->
+    <!--        </div>-->
+    <!--    </form>-->
 </div>
 </body>
 </html>
