@@ -28,7 +28,7 @@ var appStomp = (function () {
                 if (x >= positions[i][j].row && x <= positions[i][j].row + 20) {
                     if (y >= positions[i][j].col && y <= positions[i][j].col + 20) {
                         console.info("SILLITA!")
-                        verifyAvailability(i, j);
+                        appStomp.buyTicket(i, j);
                     }
                 }
             }
@@ -64,14 +64,15 @@ var appStomp = (function () {
         console.log(positions)
     };
 
-    var connectAndSubscribe = function () {
+    var connectAndSubscribe = function (endpoint) {
         console.info('Connecting to WS...');
         var socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
         //subscribe to /topic/TOPICXX when connections succeed
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/buyticket', message => {
+            console.log(endpoint+"++++++++++++++++++++++++++++++++++++++++++++++++++")
+            stompClient.subscribe('/topic/buyticket.' + endpoint, message => {
                 var theObject = JSON.parse(message.body);
                 seats[theObject.row][theObject.col] = false;
                 drawSeats();
@@ -83,7 +84,7 @@ var appStomp = (function () {
         getMousePosition();
     };
 
-    var verifyAvailability = function (row, col) {
+    var verifyAvailability = function (row, col, endpoint) {
         console.log("Sillita numero:" + row + col)
         let seat = new Seat(row, col);
         if (seats[row][col] === true) {
@@ -91,7 +92,8 @@ var appStomp = (function () {
             seats[row][col] = false;
             console.info("purchased ticket");
             console.log(seats)
-            stompClient.send("/topic/buyticket", {}, JSON.stringify(seat));
+            console.log(endpoint+"======================================================")
+            stompClient.send('/topic/buyticket.' + endpoint, {}, JSON.stringify(seat));
         } else {
             console.info("Ticket not available");
         }
@@ -120,6 +122,12 @@ var appStomp = (function () {
             console.log("Click yes :D");
             getMousePosition();
         },
-        eventListener: eventListener
+        eventListener: eventListener,
+        initAndConnect: function (nombreCinema, fechaFuncion, nombrePelicula) {
+            appStomp.init();
+            let enpoint = nombreCinema + "." + fechaFuncion + "." + nombrePelicula;
+            console.log(enpoint + "------------0p-----------------")
+            connectAndSubscribe(enpoint);
+        }
     };
 })();
