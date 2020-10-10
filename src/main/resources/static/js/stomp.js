@@ -3,6 +3,7 @@ var appStomp = (function () {
     var seats = [[false, true, true, true, true, false, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true]];
     var positions = [[null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null]];
     var c, ctx;
+    var enpoint;
 
     class Seat {
         constructor(row, col) {
@@ -23,14 +24,20 @@ var appStomp = (function () {
     };
 
     var checkIfSeat = function (x, y) {
+        var xSilla, wSilla, ySilla, hSilla;
         for (let i = 0; i < positions.length; i++) {
             for (let j = 0; j < positions[i].length; j++) {
-                if (x >= positions[i][j].row && x <= positions[i][j].row + 20) {
-                    if (y >= positions[i][j].col && y <= positions[i][j].col + 20) {
-                        console.info("SILLITA!")
-                        appStomp.buyTicket(i, j);
-                    }
+                xSilla = i * 20;
+                ySilla = j * 20;
+                wSilla = xSilla + 20;
+                hSilla = ySilla + 20;
+                // if (x >= positions[i][j].row && x <= positions[i][j].row + 20) {
+                //     if (y >= positions[i][j].col && y <= positions[i][j].col + 20) {
+                if (x >= xSilla && x <= wSilla && y >= ySilla && y <= hSilla) {
+                    console.info("SILLITA!")
+                    appStomp.buyTicket(i, j);
                 }
+                // }
             }
         }
     }
@@ -61,19 +68,18 @@ var appStomp = (function () {
             }
             row++;
         }
-        console.log(positions)
     };
 
-    var connectAndSubscribe = function (endpoint) {
+    var connectAndSubscribe = function () {
         console.info('Connecting to WS...');
         var socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
         //subscribe to /topic/TOPICXX when connections succeed
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            console.log(endpoint+"++++++++++++++++++++++++++++++++++++++++++++++++++")
-            stompClient.subscribe('/topic/buyticket.' + endpoint, message => {
+            stompClient.subscribe('/topic/buyticket.' + enpoint, message => {
                 var theObject = JSON.parse(message.body);
+                console.log('RECIBI POR TOPIC: ' + theObject)
                 seats[theObject.row][theObject.col] = false;
                 drawSeats();
             });
@@ -84,31 +90,30 @@ var appStomp = (function () {
         getMousePosition();
     };
 
-    var verifyAvailability = function (row, col, endpoint) {
-        console.log("Sillita numero:" + row + col)
+    var verifyAvailability = function (row, col) {
         let seat = new Seat(row, col);
         if (seats[row][col] === true) {
             console.log("Available");
             seats[row][col] = false;
-            console.info("purchased ticket");
-            console.log(seats)
-            console.log(endpoint+"======================================================")
-            stompClient.send('/topic/buyticket.' + endpoint, {}, JSON.stringify(seat));
+            console.info("purchased ticket" + seat);
+            stompClient.send('/app/buyticket.' + enpoint, {}, JSON.stringify(seat));
         } else {
             console.info("Ticket not available");
         }
     };
+    var setEndpoint = function (url) {
+        enpoint = url;
+    }
 
     return {
         init: function () {
             var can = document.getElementById("canvas");
             drawSeats();
-            //websocket connection
-            connectAndSubscribe();
         },
         buyTicket: function (row, col) {
             console.info("buying ticket at row: " + row + "col: " + col);
             verifyAvailability(row, col);
+            drawSeats();
             //buy ticket
         },
         disconnect: function () {
@@ -125,9 +130,9 @@ var appStomp = (function () {
         eventListener: eventListener,
         initAndConnect: function (nombreCinema, fechaFuncion, nombrePelicula) {
             appStomp.init();
-            let enpoint = nombreCinema + "." + fechaFuncion + "." + nombrePelicula;
-            console.log(enpoint + "------------0p-----------------")
-            connectAndSubscribe(enpoint);
+            let endPoint = nombreCinema + "." + fechaFuncion + "." + nombrePelicula;
+            setEndpoint(endPoint)
+            connectAndSubscribe();
         }
     };
 })();

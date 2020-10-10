@@ -5,8 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <script src="/webjars/jquery/3.1.0/jquery.min.js"></script>
-
+    <script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
     <script src="js/apimock.js"></script>
     <script src="js/apiclient.js"></script>
     <script src="js/app.js"></script>
@@ -25,6 +26,7 @@
             padding: 10px;
             border: 5px solid gray;
             margin: 0;
+            align-content: center;
         }
     </style>
 
@@ -75,14 +77,16 @@
         <canvas id="myCanvas" width="775" height="450" style="border:5px solid #1b1818;"></canvas>
         <p style="text-align-last: center;" id="numSeats"></p>
         <form class="form-inline">
-            <div class="cuadro" style="width: 50%">
+            <div class="cuadro text-center" style="width: 50%">
                 <p style="text-align-last: center;">Buy Seats</p>
-                <label>Seat</label>
-                <input id="row" type="text" class="form-control mb-2"
-                       placeholder="Row">
-                <input type="text" id="col" placeholder="Column" name="date" class="form-control mb-2">
+                <!--                <label>Seat</label>-->
+                <!--                <input id="row" type="text" class="form-control mb-2"-->
+                <!--                       placeholder="Row">-->
+                <!--                <input type="text" id="col" placeholder="Column" name="date" class="form-control mb-2">-->
+
+                <!--                        onclick="app.actualizarSilla($('#cinemaName').val(),$('#row').val(),$('#col').val())"-->
                 <button id="button" type="button" class="btn btn-primary mb-2"
-                        onclick="app.actualizarSilla($('#cinemaName').val(),$('#row').val(),$('#col').val())"
+                        onclick="app.escucharEvento()"
                         value="get Functions">Buy
                 </button>
             </div>
@@ -98,7 +102,8 @@
                     <label>Edit Function: </label>
                     <input type="time" id="time" placeholder="New Hour" name="time" class="form-control mb-2">
                     <button id="test" type="button" class="btn btn-primary mb-2"
-                            onclick="app.createIfUdefiniedOrUpdate($('#cinemaName').val(),$('#time').val())" value="get Functions">Save/Update
+                            onclick="app.createIfUdefiniedOrUpdate($('#cinemaName').val(),$('#time').val())"
+                            value="get Functions">Save/Update
                     </button>
                     <br>
                     <br>
